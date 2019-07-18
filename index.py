@@ -8,6 +8,12 @@ VERSION = 'v0.0.1'
 
 app = FastAPI()
 
+# Static
+# --------------------
+
+from starlette.staticfiles import StaticFiles
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 # Routes
 # --------------------
