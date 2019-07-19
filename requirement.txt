@@ -1,3 +1,4 @@
+uvicorn
 hypercorn
 fastapi
 aiofiles
