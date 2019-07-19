@@ -27,15 +27,15 @@ from starlette.templating import Jinja2Templates
 templates = Jinja2Templates(directory="templates")
 
 def get_full_path(img):
-    return 'http://localhost:8000/static/images/set_20/' + img
+    return 'static/images/' + img
 
 import random
 
 @app.route('/demo')
 async def homepage(request: Request):
 
-    images = image_util.get_img_from_dir(STATIC_PATH+IMAGE_PATH+'set_20')
-    images = list(map(get_full_path, images))
+    filenames, guids = image_util.get_product_from_cache()
+    images = list(map(get_full_path, filenames))
 
     images = list(map(lambda _: random.choice(images), range(4)))
 
@@ -62,8 +62,9 @@ import api.image_util as image_util
 @app.get("/admin/setup/{image_set}")
 def admin_setup(image_set):
     # model = ml.get_named_model("MobileNet")
-    filenames, guids = image_util.get_img_from_dir(STATIC_PATH+IMAGE_PATH+image_set)
+    filenames, guids = image_util.get_img_from_dir(STATIC_PATH+IMAGE_PATH, image_set)
     
+    print("======")
     print(filenames)
     print(guids)
 
