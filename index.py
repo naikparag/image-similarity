@@ -29,8 +29,6 @@ templates = Jinja2Templates(directory="templates")
 def get_full_path(img):
     return 'http://localhost:8000/static/images/set_20/' + img
 
-
-
 import random
 
 @app.route('/demo')
@@ -64,8 +62,9 @@ import api.image_util as image_util
 @app.get("/admin/setup/{image_set}")
 def admin_setup(image_set):
     # model = ml.get_named_model("MobileNet")
-    images = image_util.get_img_from_dir(STATIC_PATH+IMAGE_PATH+image_set)
+    filenames, guids = image_util.get_img_from_dir(STATIC_PATH+IMAGE_PATH+image_set)
     
-    print(images)
+    print(filenames)
+    print(guids)
 
     return "parsing complete"
