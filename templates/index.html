@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Image Similarity</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.css" rel="stylesheet">
+</head>
+
+<body>
+    <section class="hero is-light">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="title">
+                    {{title}}
+                </h1>
+                <h3 class="subtitle">
+                    {{version}}
+                </h3>
+            </div>
+        </div>
+    </section>
+    <section class="section">
+        <div class="container">
+            <div class="field is-grouped">
+                <div class="control">
+                    <a href={{random_img}} class="button is-primary">Randomise</a>
+                </div>
+            </div>
+            <div>
+                <div class="tile is-ancestor">
+                    <div class="tile is-parent">
+
+                        {% for image in images %}
+                        <div class="tile is-parent">
+                            <article class="tile is-child notification">
+                                <figure class="image is-4by4">
+                                    <img src={{ image }}>
+                                </figure>
+                            </article>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>
