@@ -1,6 +1,5 @@
 import random
-import api.ml_util as ml
-import api.image_util as image_util
+import api.similarity_controller as similarity_controller
 from starlette.templating import Jinja2Templates
 from starlette.requests import Request
 from starlette.staticfiles import StaticFiles
@@ -41,8 +40,7 @@ def read_root():
 @app.get("/admin/setup/{image_set}")
 def admin_setup(image_set):
     # model = ml.get_named_model("MobileNet")
-    product_dict = image_util.process_images(
-        image_util.STATIC_PATH + image_util.IMAGE_PATH, image_set)
+    product_dict = similarity_controller.process_images(image_set)
 
     return product_dict
 
@@ -50,11 +48,7 @@ def admin_setup(image_set):
 @app.route('/demo')
 async def homepage(request: Request):
 
-    product_dict = image_util.get_product_dict_from_cache()
-    random_products = dict(random.sample(product_dict.items(), 4))
-
-    print("------random_products")
-    print(random_products)
+    random_products = similarity_controller.get_random_products()
 
     bundle = {
         'request': request,
@@ -72,11 +66,8 @@ async def homepage(request: Request):
 def get_similar(request: Request):
 
     product_id = request.path_params['product_id']
-    image_util.get_product(product_id)
 
-    product_dict = image_util.get_product_dict_from_cache()
-    similar_products = dict(random.sample(product_dict.items(), 4))
-
+    similar_products = similarity_controller.get_similar_products(product_id)
     bundle = {
         'request': request,
         'similar': similar_products.values()
