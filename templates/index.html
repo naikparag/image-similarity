@@ -35,11 +35,12 @@
             <div>
                 <div class="tile is-ancestor">
                     <div class="tile">
-                        {% for image in images %}
+                        {% for product in products %}
                         <div class="tile is-parent">
-                            <article class="tile is-child notification" onclick="window.location='/demo'">
+                            <article class="tile is-child notification"
+                                onclick="fetch_similar_products('{{product.uuid}}')">
                                 <figure class="image is-4by4">
-                                    <img src={{ image }}>
+                                    <img src={{ product.image_path }}>
                                 </figure>
                             </article>
                         </div>
@@ -57,10 +58,28 @@
 
     <!-- RECOMMENDED PRODUCTS SECTION -->
     <section class="section">
-        <div class="container">
-            
+        <div id="similarity_container" class="container">
+
         </div>
     </section>
+
+
+    <script type="text/javascript">
+        function fetch_similar_products(product_id) {
+
+            console.log("product_id requested is - " + product_id)
+
+            url = "similar/" + product_id
+            fetch(url)
+                .then(response => response.text())
+                .then(function (data) {
+                    let similarity_container = document.getElementById("similarity_container")
+                    similarity_container.innerHTML = ""
+                    similarity_container.insertAdjacentHTML('beforeend', data)
+                })
+                .catch(error => console.log('error is', error))
+        }
+    </script>
 </body>
 
 </html>

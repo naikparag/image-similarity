@@ -1,4 +1,9 @@
-import uvicorn
+import random
+import api.ml_util as ml
+import api.image_util as image_util
+from starlette.templating import Jinja2Templates
+from starlette.requests import Request
+from starlette.staticfiles import StaticFiles
 from fastapi import FastAPI
 
 # Constants
@@ -17,60 +22,64 @@ app = FastAPI()
 # Static
 # --------------------
 
-from starlette.staticfiles import StaticFiles
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Template
 # --------------------
-from starlette.requests import Request
-from starlette.templating import Jinja2Templates
+
 templates = Jinja2Templates(directory="templates")
 
-def get_full_path(img):
-    return 'static/images/' + img
+# Routes
+# --------------------
 
-import random
+
+@app.get("/")
+def read_root():
+    return 'IMAGE_SIMILARITY - ' + VERSION
+
+
+@app.get("/admin/setup/{image_set}")
+def admin_setup(image_set):
+    # model = ml.get_named_model("MobileNet")
+    product_dict = image_util.process_images(
+        image_util.STATIC_PATH + image_util.IMAGE_PATH, image_set)
+
+    return product_dict
+
 
 @app.route('/demo')
 async def homepage(request: Request):
 
-    filenames, guids = image_util.get_product_from_cache()
-    images = list(map(get_full_path, filenames))
+    product_dict = image_util.get_product_dict_from_cache()
+    random_products = dict(random.sample(product_dict.items(), 4))
 
-    images = list(map(lambda _: random.choice(images), range(4)))
+    print("------random_products")
+    print(random_products)
 
     bundle = {
         'request': request,
         'title': 'Image Similartiy',
         'version': VERSION,
-        'random_img': 'http://localhost:8000/demo',
-        'images': images
+        'random_img': '/demo',
+        'products': random_products.values(),
+        'similar': []
 
     }
     return templates.TemplateResponse('index.html', bundle)
 
-# Routes
-# --------------------
-
-@app.get("/")
-def read_root():
-    return 'IMAGE_SIMILARITY - ' + VERSION 
-
-import api.ml_util as ml
-import api.image_util as image_util
-
-@app.get("/admin/setup/{image_set}")
-def admin_setup(image_set):
-    # model = ml.get_named_model("MobileNet")
-    filenames, guids = image_util.get_img_from_dir(STATIC_PATH+IMAGE_PATH, image_set)
-    
-    print("======")
-    print(filenames)
-    print(guids)
-
-    return "parsing complete"
 
 @app.get("/similar/{product_id}")
-def get_similar(product_id):
+def get_similar(request: Request):
 
-    # product_index = image_util.get_product_index(product_id)
+    product_id = request.path_params['product_id']
+    image_util.get_product(product_id)
+
+    product_dict = image_util.get_product_dict_from_cache()
+    similar_products = dict(random.sample(product_dict.items(), 4))
+
+    bundle = {
+        'request': request,
+        'similar': similar_products.values()
+
+    }
+    return templates.TemplateResponse('similar.html', bundle)

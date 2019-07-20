@@ -1,0 +1,18 @@
+<div>
+    <div class="tile is-ancestor">
+        <div class="tile">
+            {% for product in similar %}
+            <div class="tile is-parent">
+                <article class="tile is-child notification">
+                    <figure class="image is-4by4">
+                        <img src={{ product.image_path }}>
+                    </figure>
+                </article>
+            </div>
+            {% endfor %}
+            <!-- Empty tile for better sizing of other tiles -->
+            <div class="tile is-parent"></div>
+            <div class="tile is-parent"></div>
+        </div>
+    </div>
+</div>
