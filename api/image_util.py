@@ -4,7 +4,6 @@ import uuid
 product_ids = []
 image_filenames = []
 
-
 def generate_product_ids(filename):
     return uuid.uuid1()
 

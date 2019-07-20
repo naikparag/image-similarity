@@ -10,6 +10,7 @@
 </head>
 
 <body>
+    <!-- HERO SECTION -->
     <section class="hero is-light">
         <div class="hero-body">
             <div class="container">
@@ -22,6 +23,8 @@
             </div>
         </div>
     </section>
+
+    <!-- PRODUCT IMAGE SECTION -->
     <section class="section">
         <div class="container">
             <div class="field is-grouped">
@@ -31,20 +34,31 @@
             </div>
             <div>
                 <div class="tile is-ancestor">
-                    <div class="tile is-parent">
-
+                    <div class="tile">
                         {% for image in images %}
                         <div class="tile is-parent">
-                            <article class="tile is-child notification">
+                            <article class="tile is-child notification" onclick="window.location='/demo'">
                                 <figure class="image is-4by4">
                                     <img src={{ image }}>
                                 </figure>
                             </article>
                         </div>
                         {% endfor %}
+                        <!-- Empty tile for better sizing of other tiles -->
+                        <div class="tile is-parent"></div>
+                        <div class="tile is-parent"></div>
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <hr style='margin: 0'>
+
+    <!-- RECOMMENDED PRODUCTS SECTION -->
+    <section class="section">
+        <div class="container">
+            
         </div>
     </section>
 </body>

@@ -69,3 +69,8 @@ def admin_setup(image_set):
     print(guids)
 
     return "parsing complete"
+
+@app.get("/similar/{product_id}")
+def get_similar(product_id):
+
+    # product_index = image_util.get_product_index(product_id)
