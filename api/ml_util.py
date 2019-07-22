@@ -1,5 +1,5 @@
 from tensorflow.keras import applications
-import ssl
+import ssl, time
 
 import config
 
@@ -24,7 +24,7 @@ def get_named_model(name):
         return applications.mobilenet.MobileNet(weights='imagenet', include_top=False, pooling='avg')
 
     return applications.resnet50.ResNet50(weights='imagenet', include_top=False, pooling='avg')
-    
+
 
 from PIL import Image as PILImage
 from tensorflow.keras.applications.resnet50 import preprocess_input
@@ -32,13 +32,12 @@ from tensorflow.keras.preprocessing import image as image_preprocessing
 import numpy as np
 
 def get_feature_vector(images):
-    print("-- inside get feature vector")
-    print(images)
-    return list(map(process_feature_vector, images))
+    time_start = time.time()
+    feature_vector = list(map(process_feature_vector, images))
+    print('Feature vector processing! Time elapsed: {} seconds'.format(time.time()-time_start))
+    return feature_vector
 
 def process_feature_vector(img_path):
-    print("-- process feature vector")
-    print(config.IMAGE_DIR)
     img = PILImage.open( config.IMAGE_DIR + img_path)
     img.resize((224,224),PILImage.ANTIALIAS)
     x = image_preprocessing.img_to_array(img)
@@ -53,10 +52,20 @@ def process_feature_vector(img_path):
 
 from sklearn.decomposition import PCA
 def process_pca(feature_vector):
+
+    time_start = time.time()
+
     print("-- processing PCA")
     pca = PCA(n_components=6)
     pca_result = pca.fit_transform(feature_vector)
+
+    print('PCA done! Time elapsed: {} seconds'.format(time.time()-time_start))
     print(pca_result)
 
     return pca_result
 
+from sklearn.metrics.pairwise import cosine_similarity
+def process_cosine_similarity(feature_vector, product):
+    print(feature_vector)
+    print(product)
+    return cosine_similarity(feature_vector, [product])

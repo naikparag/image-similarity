@@ -70,7 +70,7 @@ def get_similar(request: Request):
     similar_products = similarity_controller.get_similar_products(product_id)
     bundle = {
         'request': request,
-        'similar': similar_products.values()
+        'similar': similar_products
 
     }
     return templates.TemplateResponse('similar.html', bundle)

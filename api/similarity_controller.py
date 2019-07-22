@@ -1,8 +1,8 @@
 import api.image_util as image_util
 import api.ml_util as ml_util
-import random
+import random, uuid
 
-RANDOM_PRODUCT_OUNT = 4
+RANDOM_PRODUCT_COUNT = 4
 
 uuids = []
 feature_vector = []
@@ -12,6 +12,7 @@ def process_images(image_set):
 
     global uuids
     global feature_vector
+    global feature_vector_low_dimention
 
     product_dict =  image_util.process_images(image_util.STATIC_PATH + image_util.IMAGE_PATH, image_set)
 
@@ -27,17 +28,40 @@ def process_images(image_set):
 def get_random_products():
     product_dict = image_util.get_product_dict_from_cache()
     random_products = dict(random.sample(
-        product_dict.items(), RANDOM_PRODUCT_OUNT))
+        product_dict.items(), RANDOM_PRODUCT_COUNT))
 
     return random_products
 
 def get_similar_products(product_id):
     # TODO: this needs to bbe changed to implement using feature vectors and cosine similarity
     #  for now returning random 4 products.
-    return get_random_products()
+
+    global feature_vector_low_dimention
+
+    product_id = uuid.UUID(product_id)
+    product_feacture_vector = get_feature_vector_for_product_id(product_id)
+    similarity_results = ml_util.process_cosine_similarity(feature_vector_low_dimention, product_feacture_vector)
+    print(similarity_results)
+    
+    similarity_indices = similarity_results.argsort(axis=0)[:-4:-1].flatten().tolist()
+    print(similarity_indices)
+
+    product_dict = image_util.get_product_dict_from_cache()
+    products = list(product_dict.values())
+
+    return ([products[i] for i in similarity_indices])
 
 # helper
 # --------------------
 
 def get_image_from_product(product):
     return product.image_name
+
+def get_feature_vector_for_product_id(product_id):
+    global feature_vector_low_dimention
+    global uuids
+
+    product_index = uuids.index(product_id)
+    print(product_index)
+
+    return feature_vector_low_dimention[product_index]
