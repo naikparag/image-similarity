@@ -24,7 +24,7 @@ def get_named_model(name):
         return applications.mobilenet.MobileNet(weights='imagenet', include_top=False, pooling='avg')
 
     return applications.resnet50.ResNet50(weights='imagenet', include_top=False, pooling='avg')
-
+    
 
 from PIL import Image as PILImage
 from tensorflow.keras.applications.resnet50 import preprocess_input
@@ -50,3 +50,13 @@ def process_feature_vector(img_path):
     print("processed feature vector for: " + img_path)
 
     return features
+
+from sklearn.decomposition import PCA
+def process_pca(feature_vector):
+    print("-- processing PCA")
+    pca = PCA(n_components=6)
+    pca_result = pca.fit_transform(feature_vector)
+    print(pca_result)
+
+    return pca_result
+

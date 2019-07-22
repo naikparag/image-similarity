@@ -6,6 +6,7 @@ RANDOM_PRODUCT_OUNT = 4
 
 uuids = []
 feature_vector = []
+feature_vector_low_dimention = []
 
 def process_images(image_set):
 
@@ -18,8 +19,8 @@ def process_images(image_set):
     products = list(product_dict.values())
     product_images = list(map(get_image_from_product, products))
     feature_vector = ml_util.get_feature_vector(product_images)
-
-    print(feature_vector)
+    feature_vector_low_dimention = ml_util.process_pca(feature_vector)
+    print(feature_vector_low_dimention)
 
     return products
 
