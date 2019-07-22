@@ -6,7 +6,7 @@ STATIC_PATH = './static/'
 IMAGE_PATH = 'images/'
 
 Product = collections.namedtuple('Product', 'image_path, image_name, uuid')
-product_dict = {}
+product_dict = collections.OrderedDict()
 
 
 def generate_product_id():
@@ -28,7 +28,7 @@ def process_images(image_dir_path, working_set_directory):
 
     for file in image_filenames:
         path = STATIC_PATH + IMAGE_PATH + working_set_directory + '/' + file
-        product = Product(path, file, generate_product_id())
+        product = Product(path, working_set_directory + '/' + file, generate_product_id())
         product_dict[product.uuid] = product
 
     return product_dict

@@ -1,6 +1,8 @@
 from tensorflow.keras import applications
 import ssl
 
+import config
+
 def get_named_model(name):
     ssl._create_default_https_context = ssl._create_unverified_context
     
@@ -23,5 +25,28 @@ def get_named_model(name):
 
     return applications.resnet50.ResNet50(weights='imagenet', include_top=False, pooling='avg')
 
-def get_test():
-    return "data from ml util"
+
+from PIL import Image as PILImage
+from tensorflow.keras.applications.resnet50 import preprocess_input
+from tensorflow.keras.preprocessing import image as image_preprocessing
+import numpy as np
+
+def get_feature_vector(images):
+    print("-- inside get feature vector")
+    print(images)
+    return list(map(process_feature_vector, images))
+
+def process_feature_vector(img_path):
+    print("-- process feature vector")
+    print(config.IMAGE_DIR)
+    img = PILImage.open( config.IMAGE_DIR + img_path)
+    img.resize((224,224),PILImage.ANTIALIAS)
+    x = image_preprocessing.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = preprocess_input(x)
+    # extract the features
+    features = get_named_model('MobileNet').predict(x)[0]
+
+    print("processed feature vector for: " + img_path)
+
+    return features
