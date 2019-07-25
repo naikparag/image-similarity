@@ -120,8 +120,10 @@
         function selectTab(name) {
            
             removeActive();
-            var tab = document.getElementsByClassName(name)
-            tab.classList.add("is-active")
+            //var tab = document.getElementsByClassName(name)
+            //tab.classList.add("is-active")
+            var d = document.getElementById(name);
+            d.className += "is-active"
             //$(name).addClass("is-active");
         }
         function switchToRandom() {
