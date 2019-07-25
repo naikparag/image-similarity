@@ -1,5 +1,14 @@
 from tensorflow.keras import applications
 import ssl, time
+from sklearn.metrics.pairwise import cosine_similarity
+from PIL import Image as PILImage
+import tensorflow as tf
+from tensorflow.keras.applications.resnet50 import preprocess_input
+from tensorflow.keras.preprocessing import image as image_preprocessing
+import numpy as np
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+
 
 import config
 
@@ -29,11 +38,7 @@ def get_named_model(name):
 
 base_model = get_named_model('default')
 
-from PIL import Image as PILImage
-import tensorflow as tf
-from tensorflow.keras.applications.resnet50 import preprocess_input
-from tensorflow.keras.preprocessing import image as image_preprocessing
-import numpy as np
+
 
 def get_feature_vector(images):
     time_start = time.time()
@@ -61,7 +66,6 @@ def process_feature_vector(img_path):
 
     return features
 
-from sklearn.decomposition import PCA
 def process_pca(feature_vector):
 
     time_start = time.time()
@@ -71,11 +75,10 @@ def process_pca(feature_vector):
     pca_result = pca.fit_transform(feature_vector)
 
     print('PCA done! Time elapsed: {} seconds'.format(time.time()-time_start))
-    print(pca_result)
+    #print(pca_result)
 
     return pca_result
 
-from sklearn.manifold import TSNE
 def process_tsne(feature_vector):
 
     time_start = time.time()
@@ -88,8 +91,5 @@ def process_tsne(feature_vector):
 
     return results
 
-from sklearn.metrics.pairwise import cosine_similarity
 def process_cosine_similarity(feature_vector, product):
-    print(feature_vector)
-    print(product)
     return cosine_similarity(feature_vector, [product])

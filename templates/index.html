@@ -7,9 +7,11 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Image Similarity</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.css" rel="stylesheet">
+
 </head>
 
 <body>
+
     <!-- HERO SECTION -->
     <section class="hero is-light">
         <div class="hero-body">
@@ -23,6 +25,42 @@
             </div>
         </div>
     </section>
+
+    <div class="tabs is-centered">
+        <ul>
+
+            <li id = "random" class="is-active">
+                <a onclick="selectTab('random')">
+                    <span class="icon is-small"><i class="fas fa-image" aria-hidden="true"></i></span>
+                    <span>Random</span>
+                </a>
+            </li>
+
+            <li id = "shoes" >
+                <a onclick="selectTab('shoes')">
+                    <span class="icon is-small"><i class="fas fa-music" aria-hidden="true"></i></span>
+                    <span>Shoes</span>
+
+                </a>
+
+            </li>
+
+            <li id = "food" >
+                <a onclick="selectTab('food')">
+                    <span class="icon is-small"><i class="fas fa-film" aria-hidden="true"></i></span>
+                    <span>Food</span>
+                </a>
+            </li>
+
+            <li id = "furniture" >
+                <a onclick="selectTab('furniture')">
+                    <span class="icon is-small"><i class="far fa-file-alt" aria-hidden="true"></i></span>
+                    <span>Furniture</span>
+                </a>
+            </li>
+
+        </ul>
+    </div>
 
     <!-- PRODUCT IMAGE SECTION -->
     <section class="section">
@@ -79,6 +117,25 @@
                 })
                 .catch(error => console.log('error is', error))
         }
+        function selectTab(name) {
+           
+            removeActive();
+            var tab = document.getElementsByClassName(name)
+            tab.classList.add("is-active")
+            //$(name).addClass("is-active");
+        }
+        function switchToRandom() {
+            removeActive();
+            
+            $("#adaptivedesign-tab").addClass("is-active");
+            $("#adaptivedesign-tab-content").removeClass("is-hidden");
+        }
+        function removeActive() {
+            var lights = document.getElementsByClassName("is-active");
+while (lights.length)
+    lights[0].classList.remove("is-active");
+}
+        
     </script>
 </body>
 

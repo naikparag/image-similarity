@@ -22,7 +22,7 @@ def process_images(image_set):
     feature_vector = ml_util.get_feature_vector(product_images)
     feature_vector_low_dimention = ml_util.process_pca(feature_vector)
     # feature_vector_low_dimention = ml_util.process_tsne(feature_vector)
-    print(feature_vector_low_dimention)
+    # print(feature_vector_low_dimention)
 
     return products
 
