@@ -3,6 +3,8 @@ import ssl, time
 
 import config
 
+IMAGE_SIZE = 126
+
 def get_named_model(name):
     ssl._create_default_https_context = ssl._create_unverified_context
     
@@ -21,14 +23,14 @@ def get_named_model(name):
         return applications.inception_v3.InceptionV3(weights='imagenet', include_top=False, pooling='avg')
 
     if name == 'MobileNet':
-        return applications.mobilenet.MobileNet(weights='imagenet', include_top=False, pooling='avg')
+        return applications.mobilenet.MobileNet(weights='imagenet', include_top=False, pooling='avg', input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3))
 
     return applications.resnet50.ResNet50(weights='imagenet', include_top=False, pooling='avg')
 
-ssl._create_default_https_context = ssl._create_unverified_context
-base_model = applications.resnet50.ResNet50(weights='imagenet', include_top=False, pooling='avg')
+base_model = get_named_model('default')
 
 from PIL import Image as PILImage
+import tensorflow as tf
 from tensorflow.keras.applications.resnet50 import preprocess_input
 from tensorflow.keras.preprocessing import image as image_preprocessing
 import numpy as np
@@ -40,8 +42,15 @@ def get_feature_vector(images):
     return feature_vector
 
 def process_feature_vector(img_path):
+
+    # tf.config.threading.set_inter_op_parallelism_threads(6)
+    # tf.config.threading.set_intra_op_parallelism_threads(6)     
+
+    # print(tf.config.threading.get_inter_op_parallelism_threads())
+    # print(tf.config.threading.get_intra_op_parallelism_threads())
+
     img = PILImage.open( config.IMAGE_DIR + img_path)
-    img.resize((224,224),PILImage.ANTIALIAS)
+    img = img.resize((IMAGE_SIZE,IMAGE_SIZE))
     x = image_preprocessing.img_to_array(img)
     x = np.expand_dims(x, axis=0)
     x = preprocess_input(x)
@@ -65,6 +74,19 @@ def process_pca(feature_vector):
     print(pca_result)
 
     return pca_result
+
+from sklearn.manifold import TSNE
+def process_tsne(feature_vector):
+
+    time_start = time.time()
+
+    print("-- processing TSNE")
+    results = TSNE(n_components=3).fit_transform(feature_vector)
+
+    print('TSNE done! Time elapsed: {} seconds'.format(time.time()-time_start))
+    print(results)
+
+    return results
 
 from sklearn.metrics.pairwise import cosine_similarity
 def process_cosine_similarity(feature_vector, product):
