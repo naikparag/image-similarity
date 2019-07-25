@@ -3,7 +3,10 @@ import api.similarity_controller as similarity_controller
 from starlette.templating import Jinja2Templates
 from starlette.requests import Request
 from starlette.staticfiles import StaticFiles
+from starlette.background import BackgroundTasks
 from fastapi import FastAPI
+from starlette.responses import JSONResponse
+
 
 # Constants
 # --------------------
@@ -38,10 +41,17 @@ def read_root():
 
 
 @app.get("/admin/setup/{image_set}")
-def admin_setup(image_set):
+async def admin_setup(image_set):
+    tasks = BackgroundTasks()
+    tasks.add_task(process_image, image_set=image_set)
+    message = {'status': 'Images processed'}
+    return JSONResponse(message, background=tasks)
     # model = ml.get_named_model("MobileNet")
-    product_dict = similarity_controller.process_images(image_set)
+    #product_dict = similarity_controller.process_images(image_set)
 
+    
+async def process_image(image_set):
+    product_dict = similarity_controller.process_images(image_set)
     return product_dict
 
 
