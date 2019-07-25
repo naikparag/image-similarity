@@ -25,6 +25,8 @@ def get_named_model(name):
 
     return applications.resnet50.ResNet50(weights='imagenet', include_top=False, pooling='avg')
 
+ssl._create_default_https_context = ssl._create_unverified_context
+base_model = applications.resnet50.ResNet50(weights='imagenet', include_top=False, pooling='avg')
 
 from PIL import Image as PILImage
 from tensorflow.keras.applications.resnet50 import preprocess_input
@@ -44,7 +46,7 @@ def process_feature_vector(img_path):
     x = np.expand_dims(x, axis=0)
     x = preprocess_input(x)
     # extract the features
-    features = get_named_model('MobileNet').predict(x)[0]
+    features = base_model.predict(x)[0]
 
     print("processed feature vector for: " + img_path)
 
