@@ -24,7 +24,10 @@ def downloadFromFile():
         # for entry in data.images:
         #     print(entry)
 
-        result = Pool(POOL_SIZE).map(fetch_images, data.images)
+        p = Pool(POOL_SIZE)
+        result = p.map(fetch_images, data.images)
+        p.close()
+        p.join()
     except Exception as err:
         print(err)
 
