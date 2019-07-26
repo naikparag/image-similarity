@@ -117,26 +117,28 @@
                 })
                 .catch(error => console.log('error is', error))
         }
-        function selectTab(name) {
+
+        
+//         function selectTab(name) {
            
-            removeActive();
-            //var tab = document.getElementsByClassName(name)
-            //tab.classList.add("is-active")
-            var d = document.getElementById(name);
-            d.className += "is-active"
-            //$(name).addClass("is-active");
-        }
-        function switchToRandom() {
-            removeActive();
+//             removeActive();
+//             //var tab = document.getElementsByClassName(name)
+//             //tab.classList.add("is-active")
+//             var d = document.getElementById(name);
+//             d.className += "is-active"
+//             //$(name).addClass("is-active");
+//         }
+//         function switchToRandom() {
+//             removeActive();
             
-            $("#adaptivedesign-tab").addClass("is-active");
-            $("#adaptivedesign-tab-content").removeClass("is-hidden");
-        }
-        function removeActive() {
-            var lights = document.getElementsByClassName("is-active");
-while (lights.length)
-    lights[0].classList.remove("is-active");
-}
+//             $("#adaptivedesign-tab").addClass("is-active");
+//             $("#adaptivedesign-tab-content").removeClass("is-hidden");
+//         }
+//         function removeActive() {
+//             var lights = document.getElementsByClassName("is-active");
+// while (lights.length)
+//     lights[0].classList.remove("is-active");
+// }
         
     </script>
 </body>

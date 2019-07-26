@@ -64,7 +64,7 @@ def process_pca(feature_vector):
     time_start = time.time()
 
     print("-- processing PCA")
-    pca = PCA(n_components=6)
+    pca = PCA(n_components=30)
     pca_result = pca.fit_transform(feature_vector)
 
     print('PCA done! Time elapsed: {} seconds'.format(time.time()-time_start))
@@ -77,7 +77,7 @@ def process_tsne(feature_vector):
     time_start = time.time()
 
     print("-- processing TSNE")
-    results = TSNE(n_components=3).fit_transform(feature_vector)
+    results = TSNE(n_components=2).fit_transform(feature_vector)
 
     print('TSNE done! Time elapsed: {} seconds'.format(time.time()-time_start))
     print(results)

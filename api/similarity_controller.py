@@ -55,7 +55,7 @@ def get_similar_products(product_id):
     similarity_results = ml_util.process_cosine_similarity(feature_vector_low_dimention, product_feacture_vector)
     print(similarity_results)
     
-    similarity_indices = similarity_results.argsort(axis=0)[:-4:-1].flatten().tolist()
+    similarity_indices = similarity_results.argsort(axis=0)[:-5:-1].flatten().tolist()
     print(similarity_indices)
 
     product_dict = image_util.get_product_dict_from_cache()
@@ -77,3 +77,5 @@ def get_feature_vector_for_product_id(product_id):
     print(product_index)
 
     return feature_vector_low_dimention[product_index]
+
+
