@@ -1,6 +1,7 @@
 import os
 import uuid
 import collections
+from PIL import Image
 
 STATIC_PATH = './static/'
 IMAGE_PATH = 'images/'
@@ -18,11 +19,28 @@ def get_img_from_dir(path):
     (_, _, filenames) = next(os.walk(path))
     return filenames
 
+def delete_curropted_images(image_dir_path,working_set_directory):
+    image_filenames = get_img_from_dir(image_dir_path+working_set_directory)
+    for filename in image_filenames:
+        path = STATIC_PATH + IMAGE_PATH + working_set_directory + '/' + filename
+        try:
+            #path = STATIC_PATH + IMAGE_PATH + working_set_directory + '/' + filename
+
+            img = Image.open('./'+path) # open the image file
+            img.verify() # verify that it is, in fact an image
+        except (IOError, SyntaxError) as e:
+            os.remove(path)
+
+
+            print('Bad file removed:', filename)
+
 
 def process_images(image_dir_path, working_set_directory):
 
+
     global product_dict
     product_dict.clear()
+    delete_curropted_images(image_dir_path, working_set_directory)
 
     image_filenames = get_img_from_dir(image_dir_path + working_set_directory)
 
