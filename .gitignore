@@ -9,3 +9,4 @@ __pycache__/
 *.cfg
 
 **/nike
+*.json
