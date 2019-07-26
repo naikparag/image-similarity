@@ -8,9 +8,7 @@ from tensorflow.keras.preprocessing import image as image_preprocessing
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
-
-
-import config
+import config, os
 
 IMAGE_SIZE = 126
 
@@ -39,7 +37,6 @@ def get_named_model(name):
 base_model = get_named_model('default')
 
 
-
 def get_feature_vector(images):
     time_start = time.time()
     feature_vector = list(map(process_feature_vector, images))
@@ -48,21 +45,17 @@ def get_feature_vector(images):
 
 def process_feature_vector(img_path):
 
-    # tf.config.threading.set_inter_op_parallelism_threads(6)
-    # tf.config.threading.set_intra_op_parallelism_threads(6)     
-
-    # print(tf.config.threading.get_inter_op_parallelism_threads())
-    # print(tf.config.threading.get_intra_op_parallelism_threads())
+    print("processing feature vector for: " + img_path)
 
     img = PILImage.open( config.IMAGE_DIR + img_path)
     img = img.resize((IMAGE_SIZE,IMAGE_SIZE))
+    if not img.mode == 'RGB':
+        img = img.convert('RGB')
     x = image_preprocessing.img_to_array(img)
     x = np.expand_dims(x, axis=0)
     x = preprocess_input(x)
     # extract the features
     features = base_model.predict(x)[0]
-
-    print("processed feature vector for: " + img_path)
 
     return features
 
@@ -93,3 +86,14 @@ def process_tsne(feature_vector):
 
 def process_cosine_similarity(feature_vector, product):
     return cosine_similarity(feature_vector, [product])
+
+def save_feature_vector(image_set, feature_vector):
+    print("-- saving feature vector: " + config.MODEL_DIR + image_set)
+    np.save(config.MODEL_DIR + image_set, feature_vector)
+
+def get_saved_feature_vector(image_set):
+    model = config.MODEL_DIR + image_set + '.npy'
+    if os.path.exists(model):
+        return np.load(model)
+    else:
+        return None

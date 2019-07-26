@@ -3,12 +3,13 @@ import requests, ssl
 import pathlib
 from urllib.parse import urlparse
 from multiprocessing.pool import Pool
+import traceback
 
 IMAGE_SIZE = 256
 filename = "validation.json"
 target = "./images/"
 # usually equals to cores on CPU
-POOL_SIZE = 6
+POOL_SIZE = 10
 
 # urls  = ["http://img.diytrade.com/1", "http://img.diytrade.com/2", "http://img.diytrade.com/3", "http://img.diytrade.com/4", "http://img.diytrade.com/5", "http://img.diytrade.com/6", "http://img.diytrade.com/7", "http://img.diytrade.com/8"]
 
@@ -30,6 +31,7 @@ def downloadFromFile():
         p.join()
     except Exception as err:
         print(err)
+        print(traceback.format_exc())
 
 def fetch_images(entry):
     try:
