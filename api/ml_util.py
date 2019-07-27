@@ -11,7 +11,8 @@ from sklearn.manifold import TSNE
 from keras.preprocessing import image
 
 
-import config
+
+import config, os
 
 IMAGE_SIZE = 126
 
@@ -40,7 +41,6 @@ def get_named_model(name):
 base_model = get_named_model('default')
 
 
-
 def get_feature_vector(images):
     time_start = time.time()
     feature_vector = list(map(process_feature_vector, images))
@@ -49,36 +49,26 @@ def get_feature_vector(images):
 
 def process_feature_vector(img_path):
 
-    # tf.config.threading.set_inter_op_parallelism_threads(6)
-    # tf.config.threading.set_intra_op_parallelism_threads(6)     
+    print("processing feature vector for: " + img_path)
 
-    # print(tf.config.threading.get_inter_op_parallelism_threads())
-    # print(tf.config.threading.get_intra_op_parallelism_threads())
-    try:
+    img = PILImage.open( config.IMAGE_DIR + img_path)
+    img = img.resize((IMAGE_SIZE,IMAGE_SIZE))
+    if not img.mode == 'RGB':
+        img = img.convert('RGB')
+    x = image_preprocessing.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = preprocess_input(x)
+    # extract the features
+    features = base_model.predict(x)[0]
 
-
-        img = image.load_img( config.IMAGE_DIR + img_path,target_size=(IMAGE_SIZE, IMAGE_SIZE))
-        #image.load_img(img_path, target_size=(224, 224))
-        #mg = img.resize((IMAGE_SIZE,IMAGE_SIZE))
-        x = image_preprocessing.img_to_array(img)
-        x = np.expand_dims(x, axis=0)
-        x = preprocess_input(x)
-        # extract the features
-        features = base_model.predict(x)[0]
-
-        print("processed feature vector for: " + img_path)
-
-        return features
-     
-    except:
-         print('Error in file'+ img_path)   
+    return features
 
 def process_pca(feature_vector):
 
     time_start = time.time()
 
     print("-- processing PCA")
-    pca = PCA(n_components=6)
+    pca = PCA(n_components=30)
     pca_result = pca.fit_transform(feature_vector)
 
     print('PCA done! Time elapsed: {} seconds'.format(time.time()-time_start))
@@ -91,7 +81,7 @@ def process_tsne(feature_vector):
     time_start = time.time()
 
     print("-- processing TSNE")
-    results = TSNE(n_components=3).fit_transform(feature_vector)
+    results = TSNE(n_components=2).fit_transform(feature_vector)
 
     print('TSNE done! Time elapsed: {} seconds'.format(time.time()-time_start))
     print(results)
@@ -100,3 +90,14 @@ def process_tsne(feature_vector):
 
 def process_cosine_similarity(feature_vector, product):
     return cosine_similarity(feature_vector, [product])
+
+def save_feature_vector(image_set, feature_vector):
+    print("-- saving feature vector: " + config.MODEL_DIR + image_set)
+    np.save(config.MODEL_DIR + image_set, feature_vector)
+
+def get_saved_feature_vector(image_set):
+    model = config.MODEL_DIR + image_set + '.npy'
+    if os.path.exists(model):
+        return np.load(model)
+    else:
+        return None

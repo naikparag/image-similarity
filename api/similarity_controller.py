@@ -55,6 +55,17 @@ def process_images(image_set):
 
     #return products
 
+def get_feature_vector(image_set, product_images):
+    model = ml_util.get_saved_feature_vector(image_set)
+    if model is None:
+        model = ml_util.get_feature_vector(product_images)
+        ml_util.save_feature_vector(image_set, model)
+    else:
+        print("-- returning saved featured vector from disk.")
+        # simply return model
+
+    return model
+
 def get_random_products():
     product_dict = image_util.get_product_dict_from_cache()
     random_products = dict(random.sample(
@@ -74,8 +85,6 @@ def get_saved_feature_vectors(image_dir):
         
 
 def get_similar_products(product_id):
-    # TODO: this needs to bbe changed to implement using feature vectors and cosine similarity
-    #  for now returning random 4 products.
 
     global feature_vector_low_dimention
 
@@ -84,9 +93,8 @@ def get_similar_products(product_id):
     similarity_results = ml_util.process_cosine_similarity(feature_vector_low_dimention, product_feacture_vector)
    
     
-    similarity_indices = similarity_results.argsort(axis=0)[:-4:-1].flatten().tolist()
-    
-
+    similarity_indices = similarity_results.argsort(axis=0)[:-5:-1].flatten().tolist()
+    print(similarity_indices)
 
     product_dict = image_util.get_product_dict_from_cache()
     products = list(product_dict.values())
@@ -106,3 +114,5 @@ def get_feature_vector_for_product_id(product_id):
     product_index = uuids.index(product_id)
 
     return feature_vector_low_dimention[product_index]
+
+

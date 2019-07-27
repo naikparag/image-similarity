@@ -16,3 +16,10 @@ Docs
 ```
 http://localhost:8000/docs
 ```
+
+Utils
+
+```
+Dowloader script
+OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES python3 downloader.py
+```

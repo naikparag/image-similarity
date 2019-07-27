@@ -8,4 +8,7 @@ __pycache__/
 *.log
 *.cfg
 
-**/nike
+**/static/images
+*.json
+**/util/images
+**/api/model
