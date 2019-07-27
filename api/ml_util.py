@@ -11,7 +11,8 @@ from sklearn.manifold import TSNE
 from keras.preprocessing import image
 
 
-
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 import config, os
 
 IMAGE_SIZE = 126
