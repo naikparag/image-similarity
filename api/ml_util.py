@@ -68,7 +68,7 @@ def process_pca(feature_vector):
     time_start = time.time()
 
     print("-- processing PCA")
-    pca = PCA(n_components=30)
+    pca = PCA(n_components=0.99, svd_solver='full')
     pca_result = pca.fit_transform(feature_vector)
 
     print('PCA done! Time elapsed: {} seconds'.format(time.time()-time_start))
