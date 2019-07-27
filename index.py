@@ -51,8 +51,8 @@ async def admin_setup(image_set):
 
     
 async def process_image(image_set):
-    product_dict = similarity_controller.process_images(image_set)
-    return product_dict
+    similarity_controller.process_images(image_set)
+    
 
 
 @app.route('/demo')
