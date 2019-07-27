@@ -8,6 +8,7 @@ from tensorflow.keras.preprocessing import image as image_preprocessing
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
+from keras.preprocessing import image
 
 
 import config
@@ -53,18 +54,24 @@ def process_feature_vector(img_path):
 
     # print(tf.config.threading.get_inter_op_parallelism_threads())
     # print(tf.config.threading.get_intra_op_parallelism_threads())
+    try:
 
-    img = PILImage.open( config.IMAGE_DIR + img_path)
-    img = img.resize((IMAGE_SIZE,IMAGE_SIZE))
-    x = image_preprocessing.img_to_array(img)
-    x = np.expand_dims(x, axis=0)
-    x = preprocess_input(x)
-    # extract the features
-    features = base_model.predict(x)[0]
 
-    print("processed feature vector for: " + img_path)
+        img = image.load_img( config.IMAGE_DIR + img_path,target_size=(IMAGE_SIZE, IMAGE_SIZE))
+        #image.load_img(img_path, target_size=(224, 224))
+        #mg = img.resize((IMAGE_SIZE,IMAGE_SIZE))
+        x = image_preprocessing.img_to_array(img)
+        x = np.expand_dims(x, axis=0)
+        x = preprocess_input(x)
+        # extract the features
+        features = base_model.predict(x)[0]
 
-    return features
+        print("processed feature vector for: " + img_path)
+
+        return features
+     
+    except:
+         print('Error in file'+ img_path)   
 
 def process_pca(feature_vector):
 
@@ -75,9 +82,9 @@ def process_pca(feature_vector):
     pca_result = pca.fit_transform(feature_vector)
 
     print('PCA done! Time elapsed: {} seconds'.format(time.time()-time_start))
-    #print(pca_result)
+    
 
-    return pca_result
+    return list(pca_result)
 
 def process_tsne(feature_vector):
 
