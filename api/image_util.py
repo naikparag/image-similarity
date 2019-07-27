@@ -2,6 +2,9 @@ import os
 import uuid
 import collections
 from PIL import Image
+from keras.preprocessing import image
+from pathlib import Path
+import pandas as pd
 
 STATIC_PATH = './static/'
 IMAGE_PATH = 'images/'
@@ -27,11 +30,10 @@ def delete_curropted_images(image_dir_path,working_set_directory):
             #path = STATIC_PATH + IMAGE_PATH + working_set_directory + '/' + filename
 
             img = Image.open('./'+path) # open the image file
-            img.verify() # verify that it is, in fact an image
+            img.verify()
+            img = image.load_img('./'+path ) # verify that it is, in fact an image
         except (IOError, SyntaxError) as e:
             os.remove(path)
-
-
             print('Bad file removed:', filename)
 
 
@@ -40,14 +42,32 @@ def process_images(image_dir_path, working_set_directory):
 
     global product_dict
     product_dict.clear()
-    delete_curropted_images(image_dir_path, working_set_directory)
 
-    image_filenames = get_img_from_dir(image_dir_path + working_set_directory)
+    csv_path = image_dir_path + working_set_directory  + '/'
 
-    for file in image_filenames:
-        path = STATIC_PATH + IMAGE_PATH + working_set_directory + '/' + file
-        product = Product(path, working_set_directory + '/' + file, generate_product_id())
-        product_dict[product.uuid] = product
+    my_file = Path(csv_path + working_set_directory+'.csv')
+    if my_file.is_file():
+
+        print('Fetching from CSV')
+        print(csv_path + working_set_directory+'.csv')
+       
+        df = pd.read_csv(csv_path + working_set_directory+'.csv')
+        for index, row in df.iterrows(): 
+           
+            path = STATIC_PATH + IMAGE_PATH + row['Images']
+            product = Product(path, '/' + row['Images'], uuid.UUID(row['UUID']))
+            product_dict[product.uuid] = product
+            
+    else:
+        
+        delete_curropted_images(image_dir_path, working_set_directory)
+
+        image_filenames = get_img_from_dir(image_dir_path + working_set_directory)
+
+        for file in image_filenames:
+            path = STATIC_PATH + IMAGE_PATH + working_set_directory + '/' + file
+            product = Product(path, working_set_directory + '/' + file, generate_product_id())
+            product_dict[product.uuid] = product
 
     return product_dict
 
