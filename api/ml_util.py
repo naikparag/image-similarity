@@ -69,7 +69,15 @@ def process_pca(feature_vector):
     time_start = time.time()
 
     print("-- processing PCA")
-    pca = PCA(n_components=0.99, svd_solver='full')
+    pca = PCA(n_components=0.90, svd_solver='full')
+
+    # pca_dims = PCA()
+    # pca_dims.fit(feature_vector)
+    # cumsum = np.cumsum(pca_dims.explained_variance_ratio_)
+    # d = np.argmax(cumsum >= 0.90) + 1
+    # print(d)
+
+    # pca = PCA(n_components=d)
     pca_result = pca.fit_transform(feature_vector)
 
     print('PCA done! Time elapsed: {} seconds'.format(time.time()-time_start))

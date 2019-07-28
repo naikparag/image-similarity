@@ -22,4 +22,7 @@ Utils
 ```
 Dowloader script
 OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES python3 downloader.py
+
+Conversion script
+python3 image_conversion.py
 ```
