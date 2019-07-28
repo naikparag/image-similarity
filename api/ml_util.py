@@ -8,7 +8,6 @@ from tensorflow.keras.preprocessing import image as image_preprocessing
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
-from keras.preprocessing import image
 
 
 from PIL import ImageFile
