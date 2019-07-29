@@ -10,12 +10,14 @@ RANDOM_PRODUCT_COUNT = 4
 uuids = []
 feature_vector = []
 feature_vector_low_dimention = []
+tsne = []
 import numpy as np
 def process_images(image_set):
 
     global uuids
     global feature_vector
     global feature_vector_low_dimention
+    global tsne
 
     product_dict =  image_util.process_images(image_util.STATIC_PATH + image_util.IMAGE_PATH, image_set)
     uuids = list(product_dict.keys())
@@ -26,13 +28,17 @@ def process_images(image_set):
 
     my_file = Path(csv_path+image_set+'.csv')
     if  my_file.is_file():
+
         
         df = pd.read_csv(my_file)
-        feature_vector,feature_vector_low_dimention = get_saved_feature_vectors(image_set)
+        feature_vector,feature_vector_low_dimention,tsne= get_saved_feature_vectors(image_set)
+
+        
         
     else:
         feature_vector = ml_util.get_feature_vector(product_images)
         feature_vector_low_dimention = ml_util.process_pca(feature_vector)
+        
         
         df = pd.DataFrame(feature_vector)
         df.insert(0,'UUID',uuids)
@@ -44,16 +50,36 @@ def process_images(image_set):
         
         df.to_csv(csv_path+"pca_feature_vector"+'.csv',index=False)
         
+        tsne =  ml_util.process_tsne(feature_vector_low_dimention)
+        df = pd.DataFrame(tsne)
+        df.insert(0,'UUID',uuids)
+        df.to_csv(csv_path+"tsne"+'.csv',index=False)
+        
         Data = {}
         Data['UUID'] = uuids
         Data['Images'] = product_images
         data_frame = pd.DataFrame(Data, columns = ['UUID','Images'])
         data_frame.to_csv(csv_path + image_set+'.csv')
 
+    # Uncomment to test with TSNE with PCA
+    #feature_vector_low_dimention = tsne
+
+
     
     
 
     #return products
+def convert_and_pca_to_tsne(csv_path):
+    pca_fv_df = pd.read_csv(csv_path + 'pca_feature_vector.csv')
+    pca_fv = pca_fv_df.loc[:, pca_fv_df.columns != 'UUID']
+    values = pca_fv.values.tolist()
+    tsne =  ml_util.process_tsne(values)
+    uuids = pca_fv_df['UUID'].values.tolist()
+    df = pd.DataFrame(tsne)
+    df.insert(0,'UUID',uuids)
+    df.to_csv(csv_path+"tsne"+'.csv',index=False)
+    print(csv_path+"tsne"+'.csv')
+    print('TSNE SAVED ')
 
 def get_feature_vector(image_set, product_images):
     model = ml_util.get_saved_feature_vector(image_set)
@@ -77,11 +103,17 @@ def get_saved_feature_vectors(image_dir):
     csv_path = image_util.STATIC_PATH + image_util.IMAGE_PATH+image_dir+'/'
     print('Fetching Feature vectores from csv')
     print(csv_path + 'feature_vector.csv')
+
     fv_df = pd.read_csv(csv_path + 'feature_vector.csv')
-    pca_fv_df = pd.read_csv(csv_path + 'pca_feature_vector.csv')
     fv = fv_df.loc[:, fv_df.columns != 'UUID']
+
+    pca_fv_df = pd.read_csv(csv_path + 'pca_feature_vector.csv')
     pca_fv = pca_fv_df.loc[:, pca_fv_df.columns != 'UUID']
-    return (fv.values.tolist(),pca_fv.values.tolist())
+
+    tsne_fv_df = pd.read_csv(csv_path + 'tsne.csv')
+    tsne_fv = tsne_fv_df.loc[:, tsne_fv_df.columns != 'UUID']
+
+    return (fv.values.tolist(),pca_fv.values.tolist(),tsne_fv.values.tolist())
         
 
 def get_similar_products(product_id):
@@ -90,6 +122,7 @@ def get_similar_products(product_id):
 
     product_id = uuid.UUID(product_id)
     product_feacture_vector = get_feature_vector_for_product_id(product_id)
+    
     similarity_results = ml_util.process_cosine_similarity(feature_vector_low_dimention, product_feacture_vector)
    
     
