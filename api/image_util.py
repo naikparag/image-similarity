@@ -4,6 +4,7 @@ import collections
 from PIL import Image
 from pathlib import Path
 import pandas as pd
+from  api import persist_model_util as model_util
 
 STATIC_PATH = './static/'
 IMAGE_PATH = 'images/'
@@ -39,15 +40,9 @@ def process_images(image_dir_path, working_set_directory):
     global product_dict
     product_dict.clear()
 
-    csv_path = image_dir_path + working_set_directory  + '/'
-
-    my_file = Path(csv_path + working_set_directory+'.csv')
-    if my_file.is_file():
-
-        print('Fetching from CSV')
-        print(csv_path + working_set_directory+'.csv')
-       
-        df = pd.read_csv(csv_path + working_set_directory+'.csv')
+    if  model_util.is_model_present(working_set_directory):  
+        df = model_util.get_dataset(working_set_directory)
+        
         for index, row in df.iterrows(): 
            
             path = STATIC_PATH + IMAGE_PATH + row['Images']
@@ -55,9 +50,6 @@ def process_images(image_dir_path, working_set_directory):
             product_dict[product.uuid] = product
             
     else:
-        
-        #delete_curropted_images(image_dir_path, working_set_directory)
-
         image_filenames = get_img_from_dir(image_dir_path + working_set_directory)
 
         for file in image_filenames:
