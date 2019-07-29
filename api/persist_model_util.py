@@ -1,7 +1,7 @@
 import pandas as pd
-import os
+import os,config
 
-dirname = 'models/'
+dirname = config.MODEL_DIR
 
 TSNE = 'tsne.csv'
 PCA = 'pca_feature_vector.csv'
