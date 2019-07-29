@@ -8,17 +8,28 @@
     <title>Image Similarity</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.css" rel="stylesheet">
 
+    <style>
+        .display-none {
+            display: none
+        }
+
+        .display-block {
+            display: block
+        }
+    </style>
+
 </head>
 
 <body>
 
     <!-- HERO SECTION -->
     <section class="hero is-light">
+
         <div class="hero-body">
             <div class="container">
-                <h1 class="title">
+                <h2 class="title">
                     {{title}}
-                </h1>
+                </h2>
                 <h3 class="subtitle">
                     {{version}}
                 </h3>
@@ -26,40 +37,44 @@
         </div>
     </section>
 
-    <div class="tabs is-centered">
-        <ul>
+    <!-- TABS -->
+    <div id='tabbar' class="container">
+        <div class="tabs is-centered">
+            <ul>
+                <li id='tab_1' class="is-active" onclick="switchTab('tab_1', 'tab_1_content')"><a>Shoes</a></li>
+                <li id='tab_2' onclick="switchTab('tab_2', 'tab_2_content')"><a>Home</a></li>
+                <li id='tab_3' onclick="switchTab('tab_3', 'tab_3_content')"><a>Food</a></li>
+                <li id='tab_4' onclick="switchTab('tab_4', 'tab_4_content')"><a>Sample</a></li>
+            </ul>
+        </div>
+        </section>
+    </div>
 
-            <li id = "random" class="is-active">
-                <a onclick="selectTab('random')">
-                    <span class="icon is-small"><i class="fas fa-image" aria-hidden="true"></i></span>
-                    <span>Random</span>
-                </a>
-            </li>
+    <!-- TABS CONTENT -->
+    <div id='tab_container'>
+        <section id='tab_1_content' class="section tab_content display-block">
+            <div class="container">
+                Shoes
+            </div>
+        </section>
 
-            <li id = "shoes" >
-                <a onclick="selectTab('shoes')">
-                    <span class="icon is-small"><i class="fas fa-music" aria-hidden="true"></i></span>
-                    <span>Shoes</span>
+        <section id='tab_2_content' class="section tab_content display-none">
+            <div class="container">
+                Home
+            </div>
+        </section>
 
-                </a>
+        <section id='tab_3_content' class="section tab_content display-none">
+            <div class="container">
+                Food
+            </div>
+        </section>
 
-            </li>
-
-            <li id = "food" >
-                <a onclick="selectTab('food')">
-                    <span class="icon is-small"><i class="fas fa-film" aria-hidden="true"></i></span>
-                    <span>Food</span>
-                </a>
-            </li>
-
-            <li id = "furniture" >
-                <a onclick="selectTab('furniture')">
-                    <span class="icon is-small"><i class="far fa-file-alt" aria-hidden="true"></i></span>
-                    <span>Furniture</span>
-                </a>
-            </li>
-
-        </ul>
+        <section id='tab_4_content' class="section tab_content display-none">
+            <div class="container">
+                Sample
+            </div>
+        </section>
     </div>
 
     <!-- PRODUCT IMAGE SECTION -->
@@ -101,8 +116,8 @@
         </div>
     </section>
 
-
     <script type="text/javascript">
+        // FETCH SIMILAR PRODUCTS
         function fetch_similar_products(product_id) {
 
             console.log("product_id requested is - " + product_id)
@@ -118,28 +133,30 @@
                 .catch(error => console.log('error is', error))
         }
 
-        
-//         function selectTab(name) {
-           
-//             removeActive();
-//             //var tab = document.getElementsByClassName(name)
-//             //tab.classList.add("is-active")
-//             var d = document.getElementById(name);
-//             d.className += "is-active"
-//             //$(name).addClass("is-active");
-//         }
-//         function switchToRandom() {
-//             removeActive();
-            
-//             $("#adaptivedesign-tab").addClass("is-active");
-//             $("#adaptivedesign-tab-content").removeClass("is-hidden");
-//         }
-//         function removeActive() {
-//             var lights = document.getElementsByClassName("is-active");
-// while (lights.length)
-//     lights[0].classList.remove("is-active");
-// }
-        
+        // TAB SELECTION
+        function switchTab(tab_id, tab_content_id) {
+            resetTabs();
+            selected_tab = document.getElementById(tab_id)
+            selected_tab.classList.add('is-active')
+
+            selected_tab_id_content = document.getElementById(tab_content_id)
+            selected_tab_id_content.classList.add('display-block')
+            selected_tab_id_content.classList.remove('display-none')
+        }
+
+        function resetTabs() {
+            var tabs = Array.from(document.getElementById('tabbar').getElementsByTagName('li'))
+            tabs.forEach(tab => {
+                tab.classList.remove('is-active')
+            })
+
+            var tab_content_list = Array.from(document.getElementById("tab_container").getElementsByClassName(
+                'tab_content'))
+            tab_content_list.forEach(element => {
+                element.classList.remove('display-block')
+                element.classList.add('display-none')
+            })
+        }
     </script>
 </body>
 
