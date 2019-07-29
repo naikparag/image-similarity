@@ -23,6 +23,7 @@ def process_images(image_set):
     uuids = list(product_dict.keys())
     products = list(product_dict.values())
     product_images = list(map(get_image_from_product, products))
+    
 
     if  model_util.is_model_present(image_set):
         feature_vector,feature_vector_low_dimention,tsne= model_util.get_all_saved_feature_vectors(image_set)
@@ -32,7 +33,7 @@ def process_images(image_set):
         feature_vector_low_dimention = ml_util.process_pca(feature_vector)
         tsne =  ml_util.process_tsne(feature_vector_low_dimention)
 
-        model_util.save_dataset(image_set,uuids,process_images)
+        model_util.save_dataset(image_set,uuids,product_images)
         model_util.save_feature_vectors(image_set,uuids,feature_vector)
         model_util.save_pca(image_set,uuids,feature_vector_low_dimention)
         model_util.save_tsne(image_set,uuids,tsne)
