@@ -8,6 +8,16 @@
     <title>Image Similarity</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.css" rel="stylesheet">
 
+    <style>
+        .display-none {
+            display: none
+        }
+
+        .display-block {
+            display: block
+        }
+    </style>
+
 </head>
 
 <body>
@@ -31,39 +41,41 @@
     <div id='tabbar' class="container">
         <div class="tabs is-centered">
             <ul>
-                <li id='tab_1' class="is-active" onclick="switchTab('tab_1', 'tab_content_1')"><a>Shoes</a></li>
-                <li id='tab_2' onclick="switchTab('tab_2', 'tab_content_2')"><a>Home</a></li>
-                <li id='tab_3' onclick="switchTab('tab_3', 'tab_content_3')"><a>Food</a></li>
-                <li id='tab_4' onclick="switchTab('tab_4', 'tab_content_4')"><a>Sample</a></li>
+                <li id='tab_1' class="is-active" onclick="switchTab('tab_1', 'tab_1_content')"><a>Shoes</a></li>
+                <li id='tab_2' onclick="switchTab('tab_2', 'tab_2_content')"><a>Home</a></li>
+                <li id='tab_3' onclick="switchTab('tab_3', 'tab_3_content')"><a>Food</a></li>
+                <li id='tab_4' onclick="switchTab('tab_4', 'tab_4_content')"><a>Sample</a></li>
             </ul>
         </div>
         </section>
     </div>
 
     <!-- TABS CONTENT -->
-    <section id='tab_1_content' class="section">
-        <div class="container">
-            Tab 1
-        </div>
-    </section>
+    <div id='tab_container'>
+        <section id='tab_1_content' class="section tab_content display-block">
+            <div class="container">
+                Shoes
+            </div>
+        </section>
 
-    <section id='tab_2_content' class="section">
-        <div class="container">
-            Tab 2
-        </div>
-    </section>
+        <section id='tab_2_content' class="section tab_content display-none">
+            <div class="container">
+                Home
+            </div>
+        </section>
 
-    <section id='tab_3_content' class="section">
-        <div class="container">
-            Tab 3
-        </div>
-    </section>
+        <section id='tab_3_content' class="section tab_content display-none">
+            <div class="container">
+                Food
+            </div>
+        </section>
 
-    <section id='tab_3_content' class="section">
-        <div class="container">
-            Tab 4
-        </div>
-    </section>
+        <section id='tab_4_content' class="section tab_content display-none">
+            <div class="container">
+                Sample
+            </div>
+        </section>
+    </div>
 
     <!-- PRODUCT IMAGE SECTION -->
     <section class="section">
@@ -104,7 +116,6 @@
         </div>
     </section>
 
-
     <script type="text/javascript">
         // FETCH SIMILAR PRODUCTS
         function fetch_similar_products(product_id) {
@@ -127,12 +138,23 @@
             resetTabs();
             selected_tab = document.getElementById(tab_id)
             selected_tab.classList.add('is-active')
+
+            selected_tab_id_content = document.getElementById(tab_content_id)
+            selected_tab_id_content.classList.add('display-block')
+            selected_tab_id_content.classList.remove('display-none')
         }
 
         function resetTabs() {
             var tabs = Array.from(document.getElementById('tabbar').getElementsByTagName('li'))
             tabs.forEach(tab => {
                 tab.classList.remove('is-active')
+            })
+
+            var tab_content_list = Array.from(document.getElementById("tab_container").getElementsByClassName(
+                'tab_content'))
+            tab_content_list.forEach(element => {
+                element.classList.remove('display-block')
+                element.classList.add('display-none')
             })
         }
     </script>
