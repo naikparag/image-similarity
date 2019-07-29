@@ -11,4 +11,5 @@ __pycache__/
 **/static/images
 *.json
 **/util/images
+**/util/images_processed
 **/api/model

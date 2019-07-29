@@ -2,7 +2,6 @@ import os
 import uuid
 import collections
 from PIL import Image
-from keras.preprocessing import image
 from pathlib import Path
 import pandas as pd
 
