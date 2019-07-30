@@ -46,8 +46,6 @@ async def admin_setup(image_set):
     tasks.add_task(process_image, image_set=image_set)
     message = {'status': 'Images processed'}
     return JSONResponse(message, background=tasks)
-    # model = ml.get_named_model("MobileNet")
-    #product_dict = similarity_controller.process_images(image_set)
 
 
 async def process_image(image_set):
@@ -93,8 +91,7 @@ def get_random(request: Request):
 
     bundle = {
         'request': request,
-        'products': random_products.values(),
-        'similar': []
+        'products': random_products.values()
 
     }
     return templates.TemplateResponse('random.html', bundle)

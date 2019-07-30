@@ -12,11 +12,6 @@ from ast import literal_eval
 from api import persist_util
 
 RANDOM_PRODUCT_COUNT = 4
-
-uuids = []
-feature_vector = []
-feature_vector_low_dimention = []
-tsne = []
 metadata = set()
 
 model_detail = collections.namedtuple(
@@ -24,38 +19,6 @@ model_detail = collections.namedtuple(
 model_dict = {}
 
 METADATA_FILE = 'metadata.pickle'
-
-
-def process_images(image_set):
-
-    global uuids
-    global feature_vector
-    global feature_vector_low_dimention
-    global tsne
-
-    sync_metadata(image_set)
-
-    product_dict = image_util.process_images(
-        image_util.STATIC_PATH + image_util.IMAGE_PATH, image_set)
-    uuids = list(product_dict.keys())
-    products = list(product_dict.values())
-    product_images = list(map(get_image_from_product, products))
-
-    if persist_util.is_model_present(image_set):
-        feature_vector, feature_vector_low_dimention, tsne = persist_util.get_all_saved_feature_vectors(
-            image_set)
-
-    else:
-        feature_vector = ml_util.get_feature_vector(product_images)
-        feature_vector_low_dimention = ml_util.process_pca(feature_vector)
-        tsne = ml_util.process_tsne(feature_vector_low_dimention)
-
-        persist_util.save_dataset(image_set, uuids, product_images)
-        persist_util.save_feature_vectors(image_set, uuids, feature_vector)
-        persist_util.save_pca(image_set, uuids, feature_vector_low_dimention)
-        persist_util.save_tsne(image_set, uuids, tsne)
-
-    return 'Processing Images for - ' + image_set
 
 
 def process_images_v2(image_set):
