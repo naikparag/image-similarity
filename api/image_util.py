@@ -4,7 +4,7 @@ import collections
 from PIL import Image
 from pathlib import Path
 import pandas as pd
-from  api import persist_model_util as model_util
+from  api import persist_util as model_util
 
 STATIC_PATH = './static/'
 IMAGE_PATH = 'images/'
@@ -34,30 +34,19 @@ def filter_invalid_image(filepath):
         print("skipping invalid img -- " + filepath)
         return  True
 
-
 def process_images(image_dir_path, working_set_directory):
 
     global product_dict
     product_dict.clear()
 
-    if  model_util.is_model_present(working_set_directory):  
-        df = model_util.get_dataset(working_set_directory)
-        
-        for index, row in df.iterrows(): 
-           
-            path = STATIC_PATH + IMAGE_PATH + row['Images']
-            product = Product(path, '/' + row['Images'], uuid.UUID(row['UUID']))
-            product_dict[product.uuid] = product
-            
-    else:
-        image_filenames = get_img_from_dir(image_dir_path + working_set_directory)
+    image_filenames = get_img_from_dir(image_dir_path + working_set_directory)
 
-        for file in image_filenames:
-            path = STATIC_PATH + IMAGE_PATH + working_set_directory + '/' + file
-            if filter_invalid_image(STATIC_PATH + IMAGE_PATH + working_set_directory + '/' + file):
-                continue
-            product = Product(path, working_set_directory + '/' + file, generate_product_id())
-            product_dict[product.uuid] = product
+    for file in image_filenames:
+        path = STATIC_PATH + IMAGE_PATH + working_set_directory + '/' + file
+        if filter_invalid_image(STATIC_PATH + IMAGE_PATH + working_set_directory + '/' + file):
+            continue
+        product = Product(path, working_set_directory + '/' + file, generate_product_id())
+        product_dict[product.uuid] = product
 
     return product_dict
 

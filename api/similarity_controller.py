@@ -1,17 +1,31 @@
+import numpy as np
 import api.image_util as image_util
 import api.ml_util as ml_util
-import random, uuid
+import os
+import collections
+import uuid
+import random
+import config
 import pandas as pd
 from pathlib import Path
 from ast import literal_eval
-from api import persist_model_util as model_util
+from api import persist_util
+
 RANDOM_PRODUCT_COUNT = 4
 
 uuids = []
 feature_vector = []
 feature_vector_low_dimention = []
 tsne = []
-import numpy as np
+metadata = set()
+
+model_detail = collections.namedtuple(
+    'model_detail', 'uuid, product_dict, pca, tsne')
+model_dict = {}
+
+METADATA_FILE = 'metadata.pickle'
+
+
 def process_images(image_set):
 
     global uuids
@@ -19,26 +33,90 @@ def process_images(image_set):
     global feature_vector_low_dimention
     global tsne
 
-    product_dict =  image_util.process_images(image_util.STATIC_PATH + image_util.IMAGE_PATH, image_set)
+    sync_metadata(image_set)
+
+    product_dict = image_util.process_images(
+        image_util.STATIC_PATH + image_util.IMAGE_PATH, image_set)
     uuids = list(product_dict.keys())
     products = list(product_dict.values())
     product_images = list(map(get_image_from_product, products))
-    
 
-    if  model_util.is_model_present(image_set):
-        feature_vector,feature_vector_low_dimention,tsne= model_util.get_all_saved_feature_vectors(image_set)
+    if persist_util.is_model_present(image_set):
+        feature_vector, feature_vector_low_dimention, tsne = persist_util.get_all_saved_feature_vectors(
+            image_set)
 
     else:
         feature_vector = ml_util.get_feature_vector(product_images)
         feature_vector_low_dimention = ml_util.process_pca(feature_vector)
-        tsne =  ml_util.process_tsne(feature_vector_low_dimention)
+        tsne = ml_util.process_tsne(feature_vector_low_dimention)
 
-        model_util.save_dataset(image_set,uuids,product_images)
-        model_util.save_feature_vectors(image_set,uuids,feature_vector)
-        model_util.save_pca(image_set,uuids,feature_vector_low_dimention)
-        model_util.save_tsne(image_set,uuids,tsne)
+        persist_util.save_dataset(image_set, uuids, product_images)
+        persist_util.save_feature_vectors(image_set, uuids, feature_vector)
+        persist_util.save_pca(image_set, uuids, feature_vector_low_dimention)
+        persist_util.save_tsne(image_set, uuids, tsne)
 
-    #return products
+    return 'Processing Images for - ' + image_set
+
+
+def process_images_v2(image_set):
+
+    global model_dict
+    global metadata
+
+    sync_metadata(image_set)
+
+    model_dict[image_set] = get_model_detail(image_set)
+
+    return 'Processinng Images for - ' + image_set
+
+
+def sync_metadata(image_set):
+    global metadata
+
+    if os.path.exists(config.MODEL_DIR + METADATA_FILE):
+        metadata = persist_util.get_from_file(METADATA_FILE)
+
+    metadata.add(image_set)
+    persist_util.save_to_file(METADATA_FILE, metadata)
+
+    print(metadata)
+
+
+def get_model_detail(image_set):
+    global model_dict
+
+    # 1. return in memory model if present
+    if image_set in model_dict:
+        print("-- return in-memory model for - " + image_set)
+        return model_dict[image_set]
+
+    saved_model_path = config.MODEL_DIR + image_set + '.pickle'
+
+    # 2. return frozen model if present
+    if os.path.exists(saved_model_path):
+        print("-- return frozen model for - " + image_set)
+        return persist_util.get_from_file(image_set + '.pickle')
+
+    # 3. generate model from source
+    model_detail = generate_model_detail(image_set)
+    persist_util.save_to_file(image_set + '.pickle', model_detail)
+
+    return model_detail
+
+
+def generate_model_detail(image_set):
+
+    product_dict = image_util.process_images(
+        image_util.STATIC_PATH + image_util.IMAGE_PATH, image_set)
+    uuids = list(product_dict.keys())
+    products = list(product_dict.values())
+    product_images = list(map(get_image_from_product, products))
+
+    feature_vector = ml_util.get_feature_vector(product_images)
+    pca = ml_util.process_pca(feature_vector)
+    tsne = ml_util.process_tsne(pca)
+
+    return model_detail(uuids, product_dict, pca, tsne)
 
 
 def get_feature_vector(image_set, product_images):
@@ -52,27 +130,35 @@ def get_feature_vector(image_set, product_images):
 
     return model
 
-def get_random_products():
-    product_dict = image_util.get_product_dict_from_cache()
+
+def get_random_products(image_set):
+    global model_dict
+
+    product_dict = (model_dict[image_set]).product_dict
     random_products = dict(random.sample(
         product_dict.items(), RANDOM_PRODUCT_COUNT))
 
     return random_products
-        
-def get_similar_products(product_id):
 
-    global feature_vector_low_dimention
+
+def get_similar_products(image_set, product_id):
+
+    global model_dict
+
+    model_detail = model_dict[image_set]
 
     product_id = uuid.UUID(product_id)
-    product_feacture_vector = get_feature_vector_for_product_id(product_id)
-    
-    similarity_results = ml_util.process_cosine_similarity(feature_vector_low_dimention, product_feacture_vector)
-   
-    
-    similarity_indices = similarity_results.argsort(axis=0)[:-5:-1].flatten().tolist()
+    product_feature_vector = get_feature_vector_for_product_id(
+        product_id, model_detail)
+
+    similarity_results = ml_util.process_cosine_similarity(
+        model_detail.pca, product_feature_vector)
+
+    similarity_indices = similarity_results.argsort(
+        axis=0)[:-5:-1].flatten().tolist()
     print(similarity_indices)
 
-    product_dict = image_util.get_product_dict_from_cache()
+    product_dict = model_detail.product_dict
     products = list(product_dict.values())
 
     return ([products[i] for i in similarity_indices])
@@ -80,15 +166,12 @@ def get_similar_products(product_id):
 # helper
 # --------------------
 
+
 def get_image_from_product(product):
     return product.image_name
 
-def get_feature_vector_for_product_id(product_id):
-    global feature_vector_low_dimention
-    global uuids
 
-    product_index = uuids.index(product_id)
+def get_feature_vector_for_product_id(product_id, model_detail):
 
-    return feature_vector_low_dimention[product_index]
-
-
+    product_index = (model_detail.uuid).index(product_id)
+    return (model_detail.pca)[product_index]

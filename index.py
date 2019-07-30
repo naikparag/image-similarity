@@ -49,16 +49,15 @@ async def admin_setup(image_set):
     # model = ml.get_named_model("MobileNet")
     #product_dict = similarity_controller.process_images(image_set)
 
-    
+
 async def process_image(image_set):
-    similarity_controller.process_images(image_set)
-    
+    similarity_controller.process_images_v2(image_set)
 
 
 @app.route('/demo')
 async def homepage(request: Request):
 
-    random_products = similarity_controller.get_random_products()
+    random_products = similarity_controller.get_random_products('set_20')
 
     bundle = {
         'request': request,
@@ -71,12 +70,13 @@ async def homepage(request: Request):
     return templates.TemplateResponse('index.html', bundle)
 
 
-@app.get("/similar/{product_id}")
+@app.get("/similar/{image_set}/{product_id}")
 def get_similar(request: Request):
 
+    image_set = request.path_params['image_set']
     product_id = request.path_params['product_id']
 
-    similar_products = similarity_controller.get_similar_products(product_id)
+    similar_products = similarity_controller.get_similar_products(image_set, product_id)
     bundle = {
         'request': request,
         'similar': similar_products
@@ -84,10 +84,12 @@ def get_similar(request: Request):
     }
     return templates.TemplateResponse('similar.html', bundle)
 
-@app.route('/random/{set_id}')
+
+@app.route('/random/{image_set}')
 def get_random(request: Request):
 
-    random_products = similarity_controller.get_random_products()
+    image_set = request.path_params['image_set']
+    random_products = similarity_controller.get_random_products(image_set)
 
     bundle = {
         'request': request,
