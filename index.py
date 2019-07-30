@@ -64,7 +64,6 @@ async def homepage(request: Request):
         'request': request,
         'title': 'Image Similartiy',
         'version': VERSION,
-        'random_img': '/demo',
         'products': random_products.values(),
         'similar': []
 
@@ -84,3 +83,16 @@ def get_similar(request: Request):
 
     }
     return templates.TemplateResponse('similar.html', bundle)
+
+@app.route('/random/{set_id}')
+def get_random(request: Request):
+
+    random_products = similarity_controller.get_random_products()
+
+    bundle = {
+        'request': request,
+        'products': random_products.values(),
+        'similar': []
+
+    }
+    return templates.TemplateResponse('random.html', bundle)

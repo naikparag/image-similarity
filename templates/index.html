@@ -82,27 +82,11 @@
         <div class="container">
             <div class="field is-grouped">
                 <div class="control">
-                    <a href={{random_img}} class="button is-primary">Randomise</a>
+                    <a onclick="fetch_random_products()" class="button is-primary">Randomise</a>
                 </div>
             </div>
-            <div>
-                <div class="tile is-ancestor">
-                    <div class="tile">
-                        {% for product in products %}
-                        <div class="tile is-parent">
-                            <article class="tile is-child notification"
-                                onclick="fetch_similar_products('{{product.uuid}}')">
-                                <figure class="image is-4by4">
-                                    <img src={{ product.image_path }}>
-                                </figure>
-                            </article>
-                        </div>
-                        {% endfor %}
-                        <!-- Empty tile for better sizing of other tiles -->
-                        <div class="tile is-parent"></div>
-                        <div class="tile is-parent"></div>
-                    </div>
-                </div>
+            <div id='random_container'>
+                {% include 'random.html' %}
             </div>
         </div>
     </section>
@@ -127,6 +111,20 @@
                 .then(response => response.text())
                 .then(function (data) {
                     let similarity_container = document.getElementById("similarity_container")
+                    similarity_container.innerHTML = ""
+                    similarity_container.insertAdjacentHTML('beforeend', data)
+                })
+                .catch(error => console.log('error is', error))
+        }
+
+        // FETCH RANDOM PRODUCTS
+        function fetch_random_products() {
+
+            url = "random/" + "set_20"
+            fetch(url)
+                .then(response => response.text())
+                .then(function (data) {
+                    let similarity_container = document.getElementById("random_container")
                     similarity_container.innerHTML = ""
                     similarity_container.insertAdjacentHTML('beforeend', data)
                 })
