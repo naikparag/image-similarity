@@ -55,13 +55,19 @@ async def process_image(image_set):
 @app.route('/demo')
 async def homepage(request: Request):
 
-    random_products = similarity_controller.get_random_products('nike')
+    nike_products = similarity_controller.get_random_products('nike')
+    home_products = similarity_controller.get_random_products('home')
+    fashion_products = similarity_controller.get_random_products('fashion')
+    sample = similarity_controller.get_random_products('set_20')
 
     bundle = {
         'request': request,
         'title': 'Image Similartiy',
         'version': VERSION,
-        'products': random_products.values(),
+        'nike': nike_products.values(),
+        'home': home_products.values(),
+        'fashion': fashion_products.values(),
+        'sample': sample.values(),
         'similar': []
 
     }
