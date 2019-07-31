@@ -43,7 +43,7 @@
             <ul>
                 <li id='tab_1' class="is-active" onclick="switchTab('tab_1', 'tab_1_content')"><a>Shoes</a></li>
                 <li id='tab_2' onclick="switchTab('tab_2', 'tab_2_content')"><a>Home</a></li>
-                <li id='tab_3' onclick="switchTab('tab_3', 'tab_3_content')"><a>Food</a></li>
+                <li id='tab_3' onclick="switchTab('tab_3', 'tab_3_content')"><a>Fashion</a></li>
                 <li id='tab_4' onclick="switchTab('tab_4', 'tab_4_content')"><a>Sample</a></li>
             </ul>
         </div>
@@ -54,7 +54,7 @@
     <div id='tab_container'>
         <section id='tab_1_content' class="section tab_content display-block">
             <div class="container">
-                {% with image_set='nike', container_id='random_container_1' %}
+                {% with image_set='nike',products=nike, container_id='random_container_1' %}
                     {% include 'products.html' %}
                 {% endwith %}
             </div>
@@ -62,7 +62,7 @@
 
         <section id='tab_2_content' class="section tab_content display-none">
             <div class="container">
-                {% with image_set='set_20', container_id='random_container_2' %}
+                {% with image_set='home', products= home,container_id='random_container_2' %}
                     {% include 'products.html' %}
                 {% endwith %}
             </div>
@@ -70,7 +70,7 @@
 
         <section id='tab_3_content' class="section tab_content display-none">
             <div class="container">
-                {% with image_set='set_20', container_id='random_container_3' %}
+                {% with image_set='fashion',products=fashion, container_id='random_container_3' %}
                     {% include 'products.html' %}
                 {% endwith %}
             </div>
@@ -78,7 +78,7 @@
 
         <section id='tab_4_content' class="section tab_content display-none">
             <div class="container">
-                {% with image_set='set_20', container_id='random_container_4' %}
+                {% with image_set='set_20',products=sample, container_id='random_container_4' %}
                     {% include 'products.html' %}
                 {% endwith %}
             </div>
