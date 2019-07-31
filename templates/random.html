@@ -3,7 +3,7 @@
         {% for product in products %}
         <div class="tile is-parent">
             <article class="tile is-child notification"
-                onclick="fetch_similar_products('{{product.uuid}}')">
+                onclick="fetch_similar_products('{{image_set}}','{{product.uuid}}')">
                 <figure class="image is-4by4">
                     <img src={{ product.image_path }}>
                 </figure>

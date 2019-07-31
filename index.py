@@ -55,7 +55,7 @@ async def process_image(image_set):
 @app.route('/demo')
 async def homepage(request: Request):
 
-    random_products = similarity_controller.get_random_products('set_20')
+    random_products = similarity_controller.get_random_products('nike')
 
     bundle = {
         'request': request,
@@ -91,7 +91,8 @@ def get_random(request: Request):
 
     bundle = {
         'request': request,
-        'products': random_products.values()
+        'products': random_products.values(),
+        'image_set': image_set
 
     }
     return templates.TemplateResponse('random.html', bundle)
