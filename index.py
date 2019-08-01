@@ -6,7 +6,8 @@ from starlette.staticfiles import StaticFiles
 from starlette.background import BackgroundTasks
 from fastapi import FastAPI
 from starlette.responses import JSONResponse
-
+from api import persist_util
+import config,os
 
 # Constants
 # --------------------
@@ -34,6 +35,12 @@ templates = Jinja2Templates(directory="templates")
 # Routes
 # --------------------
 
+@app.on_event("startup")
+async def startup_event():
+    if os.path.exists(config.MODEL_DIR + similarity_controller.METADATA_FILE):
+        metadata = persist_util.get_from_file(similarity_controller.METADATA_FILE)
+        for image_set in metadata:
+            similarity_controller.process_images_v2(image_set)
 
 @app.get("/")
 def read_root():
