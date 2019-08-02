@@ -3,6 +3,10 @@ Setup
 ```
 pip3 install -r requirement.txt
 hypercorn --reload index:app
+OR
+hypercorn --reload  index:app -b 127.0.0.1:8100
+OR
+hypercorn --workers 4 index:app -b 127.0.0.1:8100
 ```
 
 Demo
