@@ -2,3 +2,7 @@ uvicorn
 hypercorn
 fastapi
 aiofiles
+numpy 
+scipy 
+scikit-learn
+tensorflow==2.0.0-beta1
