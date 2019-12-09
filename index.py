@@ -12,7 +12,7 @@ import config,os
 # Constants
 # --------------------
 
-VERSION = 'v0.0.1'
+VERSION = 'v0.0.2'
 STATIC_PATH = './static/'
 IMAGE_PATH = 'images/'
 
